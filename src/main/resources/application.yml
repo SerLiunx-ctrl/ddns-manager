@@ -1,0 +1,9 @@
+#系统设置
+system:
+  #服务线程池
+  pool:
+    core-pool-size: 16
+    name-pattern: "ddns-task-%s"
+logging:
+  level:
+    com.serliunx: debug
