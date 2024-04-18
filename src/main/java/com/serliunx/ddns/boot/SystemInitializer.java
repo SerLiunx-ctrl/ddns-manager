@@ -1,8 +1,6 @@
 package com.serliunx.ddns.boot;
 
 import com.serliunx.ddns.config.SystemConfiguration;
-import com.serliunx.ddns.core.InstanceLoadContext;
-import com.serliunx.ddns.core.InstanceManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
@@ -16,7 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import static com.serliunx.ddns.constant.SystemConstants.USER_DIR;
+import static com.serliunx.ddns.core.constant.SystemConstants.USER_DIR;
 
 /**
  * 系统初始化
@@ -25,32 +23,30 @@ import static com.serliunx.ddns.constant.SystemConstants.USER_DIR;
  */
 @Slf4j
 @Component
-@SuppressWarnings("all")
 public final class SystemInitializer implements CommandLineRunner {
 
     private final SystemConfiguration systemConfiguration;
     private final DynamicThreadFactory dynamicThreadFactory;
-    private final InstanceManager instanceManager;
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
 
-    public SystemInitializer(SystemConfiguration systemConfiguration, DynamicThreadFactory dynamicThreadFactory,
-                             InstanceManager instanceManager) {
+    public SystemInitializer(SystemConfiguration systemConfiguration, DynamicThreadFactory dynamicThreadFactory) {
         this.systemConfiguration = systemConfiguration;
         this.dynamicThreadFactory = dynamicThreadFactory;
-        this.instanceManager = instanceManager;
     }
 
     @Override
     public void run(String... args) throws Exception {
 
         // 解压配置文件到主目录
-        extractResource("application.yml");
-
-        // 初始化定时任务线程池
+        releaseConfigFile("application.yml");
+        // 初始化实例信息
         init();
+        // 初始化线程池
+        initScheduledThreadPool();
     }
 
-    private void extractResource(String resourceName) throws IOException {
+    @SuppressWarnings("all")
+    private void releaseConfigFile(String resourceName) throws IOException {
         // 从类路径下获取资源文件
         ClassPathResource resource = new ClassPathResource(resourceName);
 
@@ -79,18 +75,20 @@ public final class SystemInitializer implements CommandLineRunner {
     }
 
     private void init(){
+        log.info("实例载入中, 请稍候..");
+
+        // TODO 载入实例
+
+        log.info("服务已启动.");
+    }
+
+    private void initScheduledThreadPool() {
         SystemConfiguration.Pool poolSettings = systemConfiguration.getPool();
-        this.scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(poolSettings.getCorePoolSize(), dynamicThreadFactory);
-        scheduledThreadPoolExecutor.execute(() -> {
-            log.info("实例载入中, 请稍候..");
+        this.scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(poolSettings.getCorePoolSize(),
+                dynamicThreadFactory);
 
-            // 载入实例
-            InstanceLoadContext context = instanceManager.load();
-            log.info("读取到 {} 个实例.", context.getInstanceCount());
-            context.getInstances().forEach(System.out::println);
-
-            log.info("服务已启动.");
-        });
+        // 线程池保活
+        this.scheduledThreadPoolExecutor.submit(() -> {});
 
         // 设置关闭钩子线程
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

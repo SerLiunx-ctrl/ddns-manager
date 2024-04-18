@@ -1,14 +1,13 @@
 package com.serliunx.ddns.core.instance;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.serliunx.ddns.constant.InstanceType;
-import com.serliunx.ddns.core.Instance;
+import com.serliunx.ddns.core.constant.InstanceType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
- * 实例的抽象实现, 定义公共逻辑
+ * 实例的默认实现, 定义公共逻辑
  * @author SerLiunx
  * @since 1.0
  */
@@ -16,7 +15,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class AbstractInstance implements Instance {
+public class DefaultInstance implements Instance {
 
     /**
      * 实例类型
@@ -24,10 +23,20 @@ public abstract class AbstractInstance implements Instance {
     protected InstanceType instanceType;
 
     /**
+     * 执行周期(秒)
+     */
+    protected Long interval;
+
+    /**
      * 实例名称
      * <li> 全局唯一
      */
     protected String name;
+
+    /**
+     * 父类实例名称
+     */
+    protected String fatherInstanceName;
 
     @Override
     public void run() {

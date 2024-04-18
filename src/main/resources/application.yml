@@ -7,3 +7,5 @@ system:
 logging:
   level:
     com.serliunx: debug
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss(SSS)

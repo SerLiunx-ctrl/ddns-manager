@@ -1,6 +1,7 @@
-package com.serliunx.ddns.constant;
+package com.serliunx.ddns.core.constant;
 
-import com.serliunx.ddns.core.Instance;
+import com.serliunx.ddns.core.instance.Instance;
+import com.serliunx.ddns.core.instance.DefaultInstance;
 import com.serliunx.ddns.core.instance.AliyunInstance;
 import com.serliunx.ddns.core.instance.TencentInstance;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,13 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum InstanceType {
+
+    /**
+     * 可继承的实例
+     * <li> 比较该类型为可继承的实例
+     * <li> 用于实例的某些参数可复用的情况
+     */
+    INHERITED(DefaultInstance.class),
 
     /**
      * 阿里云

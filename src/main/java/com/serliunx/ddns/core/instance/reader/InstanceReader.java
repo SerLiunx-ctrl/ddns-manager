@@ -1,20 +1,22 @@
 package com.serliunx.ddns.core.instance.reader;
 
-import com.serliunx.ddns.core.Instance;
+import com.serliunx.ddns.core.instance.Instance;
 
-import java.io.File;
+import java.util.Collection;
+import java.util.Set;
 
 /**
- * 实例加载器
+ * 从指定途径中读取实例信息, 可以是文件、字符串、字节、流等
  * @author SerLiunx
  * @since 1.0
  */
-public interface InstanceReader {
+@FunctionalInterface
+public interface InstanceReader<T> {
 
     /**
-     * 从文件中读取实例
-     * @param file 文件
-     * @return 实例
+     * 批量读取实例信息
+     * @param ts 来源集合
+     * @return 实例集合
      */
-    Instance read(File file);
+    Set<Instance> readAll(Collection<T> ts);
 }

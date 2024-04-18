@@ -9,6 +9,6 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class TencentInstance extends AbstractInstance{
+public class TencentInstance extends DefaultInstance {
 
 }

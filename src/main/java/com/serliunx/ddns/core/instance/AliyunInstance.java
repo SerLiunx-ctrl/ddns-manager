@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import static com.serliunx.ddns.constant.SystemConstants.XML_ROOT_INSTANCE_NAME;
+import static com.serliunx.ddns.core.constant.SystemConstants.XML_ROOT_INSTANCE_NAME;
 
 /**
  * @author SerLiunx
@@ -15,7 +15,9 @@ import static com.serliunx.ddns.constant.SystemConstants.XML_ROOT_INSTANCE_NAME;
 @Setter
 @ToString(callSuper = true)
 @JacksonXmlRootElement(localName = XML_ROOT_INSTANCE_NAME)
-public class AliyunInstance extends AbstractInstance{
+public class AliyunInstance extends DefaultInstance {
+    private String privateKey;
+    private String uuid;
 
     @Override
     protected void run0() {
