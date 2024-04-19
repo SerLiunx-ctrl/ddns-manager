@@ -2,11 +2,11 @@ package com.serliunx.ddns.core.instance.reader;
 
 import com.serliunx.ddns.core.constant.InstanceType;
 import com.serliunx.ddns.core.instance.Instance;
+import com.serliunx.ddns.util.ReflectionUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,59 +51,24 @@ public abstract class AbstractFileInstanceReader implements InstanceReader<File>
      * @param instances 实例信息
      * @return 属性设置完整的实例
      */
-    protected Set<Instance> buildInstances(Set<Instance> instances){
-        //筛选出用于继承的实例(用于继承的实例没有实际作用, 仅仅用于继承公用参数)
-        Map<String, Instance> inheritedInstances = instances.stream()
-                .filter(i -> i.getInstanceType().equals(InstanceType.INHERITED))
-                .collect(Collectors.toMap(Instance::getName, i -> i));
+    private Set<Instance> buildInstances(Set<Instance> instances){
         //设置实例信息, 如果需要从父类继承
-        HashSet<Instance> filteredInstances = instances.stream()
-                .filter(i -> i.getFatherInstanceName() != null && !i.getFatherInstanceName().isEmpty())
+        return instances.stream()
+                .filter(i -> !InstanceType.INHERITED.equals(i.getInstanceType()))
+                .peek(i -> {
+                    String fatherInstanceName = i.getFatherInstanceName();
+                    if(fatherInstanceName != null && !fatherInstanceName.isEmpty()){
+                        Instance fatherInstance = cacheInstanceMap.get(fatherInstanceName);
+                        if(fatherInstance != null){
+                            try {
+                                ReflectionUtils.copyField(fatherInstance, i, true);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+                })
                 .collect(Collectors.toCollection(HashSet::new));
-        filteredInstances.forEach(i -> {
-            Instance fatherInstance = inheritedInstances.get(i.getFatherInstanceName());
-            if(fatherInstance != null){
-                try {
-                    copyFields(fatherInstance, i);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-        return filteredInstances;
-    }
-
-    private void copyFields(Instance parent, Instance child) throws Exception{
-        // 获取parent对象的Class对象
-        Class<?> parentClass = parent.getClass();
-        // 获取child对象的Class对象
-        Class<?> childClass = child.getClass();
-
-        // 遍历child对象的所有属性，包括父类的属性
-        while (childClass != null) {
-            for (Field parentField : parentClass.getDeclaredFields()) {
-                // 获取属性名称
-                String fieldName = parentField.getName();
-                // 根据属性名称获取child对象中对应的属性
-                Field childField;
-                try {
-                    childField = childClass.getDeclaredField(fieldName);
-                } catch (NoSuchFieldException e) {
-                    // 如果child对象中没有同名属性，则继续遍历下一个属性
-                    continue;
-                }
-                // 设置属性可访问
-                parentField.setAccessible(true);
-                childField.setAccessible(true);
-                // 如果child对象中的属性值为null，则复制parent对象中的属性值
-                if (childField.get(child) == null) {
-                    Object value = parentField.get(parent);
-                    childField.set(child, value);
-                }
-            }
-            // 获取父类的Class对象，以便继续遍历父类的属性
-            childClass = childClass.getSuperclass();
-        }
     }
 
     @SuppressWarnings("all")

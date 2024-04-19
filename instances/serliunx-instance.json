@@ -2,7 +2,6 @@
   "instanceType": "ALI_YUN",
   "name": "serliunx-aliyun",
   "privateKey": "123456",
-  "interval": 20,
   "uuid": "demo-uuid",
   "fatherInstanceName": "root-instance"
 }

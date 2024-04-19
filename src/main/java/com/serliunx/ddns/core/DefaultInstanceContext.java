@@ -8,6 +8,10 @@ import com.serliunx.ddns.core.instance.reader.AbstractFileInstanceReader;
 import com.serliunx.ddns.core.instance.reader.JsonFileInstanceReader;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.*;
@@ -19,12 +23,16 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Slf4j
-public class DefaultInstanceContext implements InstanceContext{
+@Component
+public class DefaultInstanceContext implements InstanceContext, ApplicationContextAware {
 
     private final FileInstanceDataLoader instanceDataLoader;
     private final AbstractFileInstanceReader instanceReader;
     private final String instanceDir;
+
     private Set<Instance> instances;
+    private ApplicationContext applicationContext;
+
     private volatile boolean initialized = false;
 
     private final Object refreshLock = new Object();
@@ -63,14 +71,6 @@ public class DefaultInstanceContext implements InstanceContext{
         return instances;
     }
 
-    @Override
-    public Map<InstanceType, List<Instance>> getInstanceOfType(String typeName) {
-        if(!initialized){
-            throw new RuntimeException("还在初始化中! 请稍候");
-        }
-        return Collections.emptyMap();
-    }
-
     private void refresh(){
         if(initialized){
             return;
@@ -80,5 +80,10 @@ public class DefaultInstanceContext implements InstanceContext{
             this.instances = instanceReader.readAll(load);
             this.initialized = true;
         }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

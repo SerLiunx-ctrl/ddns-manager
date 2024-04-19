@@ -1,5 +1,7 @@
 #系统设置
 system:
+  feign:
+    basic-packages: "com.serliunx.ddns.api"
   #服务线程池
   pool:
     core-pool-size: 16

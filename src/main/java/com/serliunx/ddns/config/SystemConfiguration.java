@@ -18,6 +18,7 @@ public class SystemConfiguration {
      * 线程池配置
      */
     private Pool pool;
+    private Feign feign;
 
     @Getter
     @Setter
@@ -32,5 +33,15 @@ public class SystemConfiguration {
          * <li> 请保留编码关键字%s
          */
         private String namePattern = "task-%s";
+    }
+
+    @Getter
+    @Setter
+    public static class Feign{
+        /**
+         * Feign客户端的扫描路径
+         * <li> 使用默认即可
+         */
+        private String basicPackages;
     }
 }

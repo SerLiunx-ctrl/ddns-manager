@@ -2,6 +2,7 @@ package com.serliunx.ddns.core;
 
 import com.serliunx.ddns.core.constant.InstanceType;
 import com.serliunx.ddns.core.instance.Instance;
+import org.springframework.context.ApplicationContext;
 
 import java.util.List;
 import java.util.Map;
@@ -27,9 +28,8 @@ public interface InstanceContext {
     Set<Instance> getAllInstance();
 
     /**
-     * 获取指定类型的实例
-     * @param typeName 实例类型名称
-     * @return 返回实例集合
+     * 获取Spring容器
+     * @return Spring容器
      */
-    Map<InstanceType, List<Instance>> getInstanceOfType(String typeName);
+    ApplicationContext getApplicationContext();
 }
