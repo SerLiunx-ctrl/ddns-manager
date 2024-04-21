@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * 程序入口
@@ -11,6 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
  * @since 1.0
  */
 @Slf4j
+@EnableScheduling
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class DDNSManager {

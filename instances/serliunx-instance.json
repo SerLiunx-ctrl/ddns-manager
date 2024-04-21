@@ -1,7 +1,0 @@
-{
-  "instanceType": "ALI_YUN",
-  "name": "serliunx-aliyun",
-  "privateKey": "123456",
-  "uuid": "demo-uuid",
-  "fatherInstanceName": "root-instance"
-}

@@ -71,6 +71,12 @@ public class DefaultInstanceContext implements InstanceContext, ApplicationConte
         return instances;
     }
 
+    @Override
+    @SuppressWarnings("all")
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
     private void refresh(){
         if(initialized){
             return;
@@ -80,10 +86,5 @@ public class DefaultInstanceContext implements InstanceContext, ApplicationConte
             this.instances = instanceReader.readAll(load);
             this.initialized = true;
         }
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
     }
 }

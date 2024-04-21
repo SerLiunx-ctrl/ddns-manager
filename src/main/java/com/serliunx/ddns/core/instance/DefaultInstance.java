@@ -1,6 +1,8 @@
 package com.serliunx.ddns.core.instance;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.serliunx.ddns.context.SystemContext;
 import com.serliunx.ddns.core.InstanceContext;
 import com.serliunx.ddns.core.constant.InstanceType;
 import lombok.Getter;
@@ -30,6 +32,12 @@ public class DefaultInstance implements Instance {
     protected Long interval;
 
     /**
+     * 实例文件名
+     * <li> 仅在实例信息使用文件存储时生效
+     */
+    protected String instanceFileName;
+
+    /**
      * 实例名称
      * <li> 全局唯一
      */
@@ -43,12 +51,26 @@ public class DefaultInstance implements Instance {
     /**
      * 实例上下文
      */
-    protected transient InstanceContext instanceContext;
+    @JsonIgnore
+    protected InstanceContext instanceContext;
+
+    /**
+     * 系统参数上下文
+     */
+    @JsonIgnore
+    protected SystemContext systemContext;
 
     /**
      * Spring容器
      */
-    protected transient ApplicationContext applicationContext;
+    @JsonIgnore
+    protected ApplicationContext applicationContext;
+
+    /**
+     * 上一次执行时获取到的最新公网IP
+     * <li> 减少不必要的重复更新
+     */
+    protected String prevPublicIp;
 
     @Override
     public final void run() {
@@ -59,12 +81,22 @@ public class DefaultInstance implements Instance {
     public final void init() {
         // 默认初始化, 设置Spring容器信息
         this.applicationContext = instanceContext.getApplicationContext();
+        // 注入关键对象
+        this.systemContext = applicationContext.getBean(SystemContext.class);
         // 运行子类的初始化
         init0();
     }
 
     @Override
     public void onClose() {}
+
+    protected boolean needToUpdate(String publicIp){
+        if(publicIp == null || publicIp.isEmpty()){
+            return true;
+        }
+        // 公网IP有变动是才进行更新操作
+        return prevPublicIp == null || !prevPublicIp.equals(publicIp);
+    }
 
     /**
      * 实例运行逻辑, 具体实例类型逻辑需要子类实现

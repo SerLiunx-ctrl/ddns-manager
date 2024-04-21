@@ -17,6 +17,6 @@ public class TencentInstance extends DefaultInstance {
 
     @Override
     protected void run0() {
-        log.info("腾讯云实例运行中...");
+
     }
 }

@@ -57,6 +57,12 @@
             <artifactId>feign-core</artifactId>
             <version>13.2.1</version>
         </dependency>
+        <!-- aliyun sdk -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>alibabacloud-alidns20150109</artifactId>
+            <version>3.0.14</version>
+        </dependency>
     </dependencies>
 
     <build>

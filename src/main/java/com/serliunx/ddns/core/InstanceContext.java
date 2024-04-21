@@ -4,8 +4,6 @@ import com.serliunx.ddns.core.constant.InstanceType;
 import com.serliunx.ddns.core.instance.Instance;
 import org.springframework.context.ApplicationContext;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**

@@ -60,7 +60,7 @@ public final class SystemInitializer implements CommandLineRunner {
         // 从类路径下获取资源文件
         ClassPathResource resource = new ClassPathResource(resourceName);
 
-        Path path = Paths.get(USER_DIR + File.pathSeparator + resourceName);
+        Path path = Paths.get(USER_DIR + File.separator + resourceName);
         // 检查文件是否已存在
         if(Files.exists(path)){
             log.debug("文件 {} 已存在, 无需解压.", resourceName);
@@ -79,8 +79,6 @@ public final class SystemInitializer implements CommandLineRunner {
             outputStream.close();
         }catch (Exception e){
             log.error("文件 {} 解压失败!, 原因: {}", resourceName, e.getMessage());
-        }finally {
-            log.debug("文件 {} 解压成功!", resourceName);
         }
     }
 
@@ -117,7 +115,7 @@ public final class SystemInitializer implements CommandLineRunner {
     private void runInstances() {
         instances.forEach(i -> {
             log.debug("实例{}({})启动!", i.getName(), i.getInstanceType());
-            scheduledThreadPoolExecutor.scheduleWithFixedDelay(i, 0, i.getInterval(), TimeUnit.MILLISECONDS);
+            scheduledThreadPoolExecutor.scheduleWithFixedDelay(i, i.getInterval(), i.getInterval(), TimeUnit.SECONDS);
         });
     }
 }

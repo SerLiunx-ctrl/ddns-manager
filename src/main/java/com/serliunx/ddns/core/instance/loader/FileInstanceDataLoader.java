@@ -29,6 +29,12 @@ public class FileInstanceDataLoader implements InstanceDataLoader<File, String>{
     @Override
     public Set<File> load(String s) {
         File pathFile = new File(s);
+        if(!pathFile.exists()){
+            boolean result = pathFile.mkdirs();
+            if(!result){
+                throw new IllegalArgumentException("create path failed");
+            }
+        }
         if(!pathFile.isDirectory()){
             throw new IllegalArgumentException("path is not a directory");
         }
