@@ -1,0 +1,13 @@
+#系统设置
+system:
+  feign:
+    basic-packages: "com.serliunx.ddns.client"
+  #服务线程池
+  pool:
+    core-pool-size: 16
+    name-pattern: "ddns-task-%s"
+logging:
+  level:
+    com.serliunx: debug
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss(SSS)
