@@ -1,8 +1,10 @@
 package com.serliunx.ddns;
 
-import com.serliunx.ddns.config.SystemConfiguration;
-import com.serliunx.ddns.api.instance.InstanceContext;
+import com.serliunx.ddns.api.constant.SystemConstants;
 import com.serliunx.ddns.api.instance.Instance;
+import com.serliunx.ddns.api.instance.MultipleSourceInstanceContext;
+import com.serliunx.ddns.config.SystemConfiguration;
+import com.serliunx.ddns.core.instance.factory.JsonFileInstanceFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
@@ -32,12 +34,12 @@ public final class SystemInitializer implements CommandLineRunner {
 
     private final SystemConfiguration systemConfiguration;
     private final DynamicThreadFactory dynamicThreadFactory;
-    private final InstanceContext instanceContext;
+    private final MultipleSourceInstanceContext instanceContext;
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
     private Set<Instance> instances;
 
     public SystemInitializer(SystemConfiguration systemConfiguration, DynamicThreadFactory dynamicThreadFactory,
-                             InstanceContext instanceContext) {
+                             MultipleSourceInstanceContext instanceContext) {
         this.systemConfiguration = systemConfiguration;
         this.dynamicThreadFactory = dynamicThreadFactory;
         this.instanceContext = instanceContext;
@@ -84,8 +86,9 @@ public final class SystemInitializer implements CommandLineRunner {
 
     private void init(){
         log.info("实例载入中, 请稍候..");
-        // TODO 载入实例
-        instances = instanceContext.getAllInstance();
+        // 初始化实例工厂
+        initFactories();
+        instances = instanceContext.getInstances();
         // 设置实例上下文信息、初始化
         instances.forEach(i -> {
             log.debug("实例信息 => {}", i);
@@ -93,6 +96,13 @@ public final class SystemInitializer implements CommandLineRunner {
             i.init();
         });
         log.info("成功载入 {} 个实例", instances.size());
+    }
+
+    private void initFactories(){
+        // 读取.json文件
+        instanceContext.addInstanceFactory(new JsonFileInstanceFactory(SystemConstants.USER_INSTANCE_DIR));
+        // 刷新容器
+        instanceContext.refresh();
     }
 
     private void initScheduledThreadPool() {

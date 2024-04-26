@@ -65,7 +65,6 @@ public final class HttpClientBeanDefinitionRegistryPostProcessor implements Bean
         ClassPathClientScanner scanner = new ClassPathClientScanner(registry);
         scanner.addIncludeFilter(interfaceWithAnnotationTypeFilter);
         String basePackage = environment.getProperty("system.feign.basic-packages");
-        System.out.println(basePackage);
         Set<BeanDefinition> components = scanner.findCandidateComponents(basePackage);
         //扫描、逐一注册符合条件的HttpClient客户端
         for (BeanDefinition component : components) {
