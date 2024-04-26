@@ -1,7 +1,7 @@
 package com.serliunx.ddns.client;
 
-import com.serliunx.ddns.client.entity.IPAddressResponse;
 import com.serliunx.ddns.api.client.annotation.HttpClient;
+import com.serliunx.ddns.client.entity.IPAddressResponse;
 import feign.RequestLine;
 
 /**
