@@ -9,6 +9,8 @@ import com.serliunx.ddns.api.instance.InstanceContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -22,6 +24,7 @@ import org.springframework.context.ApplicationContext;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DefaultInstance implements Instance {
 
+    private static final Logger log = LoggerFactory.getLogger(DefaultInstance.class);
     /**
      * 实例类型
      */
@@ -75,7 +78,10 @@ public class DefaultInstance implements Instance {
 
     @Override
     public final void run() {
-        run0();
+        // 在执行前查询记录的信息, 同样则不更新记录信息
+        if(query()){
+            run0();
+        }
     }
 
     @Override
@@ -103,6 +109,12 @@ public class DefaultInstance implements Instance {
      * 实例运行逻辑, 具体实例类型逻辑需要子类实现
      */
     protected void run0(){throw new UnsupportedOperationException();}
+
+    /**
+     * 运行前查询
+     * <li> 返回真则需要更新此实例所对应的解析记录
+     */
+    protected boolean query(){return true;}
 
     /**
      * 实例初始化逻辑, 具体需要子类实现

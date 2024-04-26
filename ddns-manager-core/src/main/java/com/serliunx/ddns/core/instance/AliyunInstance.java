@@ -3,8 +3,7 @@ package com.serliunx.ddns.core.instance;
 import com.aliyun.auth.credentials.Credential;
 import com.aliyun.auth.credentials.provider.StaticCredentialProvider;
 import com.aliyun.sdk.service.alidns20150109.AsyncClient;
-import com.aliyun.sdk.service.alidns20150109.models.UpdateDomainRecordRequest;
-import com.aliyun.sdk.service.alidns20150109.models.UpdateDomainRecordResponse;
+import com.aliyun.sdk.service.alidns20150109.models.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
@@ -15,10 +14,14 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static com.serliunx.ddns.api.constant.SystemConstants.XML_ROOT_INSTANCE_NAME;
 
 /**
+ * 阿里云实例实现
  * @author SerLiunx
  * @since 1.0
  */
@@ -126,10 +129,45 @@ public class AliyunInstance extends DefaultInstance {
         debug("正在更新解析记录.");
         CompletableFuture<UpdateDomainRecordResponse> requestResponse = client.updateDomainRecord(request);
         try {
-            System.out.println(requestResponse.isDone());
+            requestResponse.whenComplete((v, t) -> {
+                if(t != null){ //出现异常
+                    handleThrowable(t);
+                }else{
+                    debug("操作结束, 结果: {}", v);
+                }
+            });
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    protected boolean query() {
+        DescribeDomainRecordInfoRequest describeDomainRecordInfoRequest = DescribeDomainRecordInfoRequest.builder()
+                .recordId(recordId)
+                .build();
+        CompletableFuture<DescribeDomainRecordInfoResponse> responseCompletableFuture =
+                client.describeDomainRecordInfo(describeDomainRecordInfoRequest);
+        try {
+            DescribeDomainRecordInfoResponse response = responseCompletableFuture.get(5, TimeUnit.SECONDS);
+            DescribeDomainRecordInfoResponseBody body = response.getBody();
+            if(body != null){
+                String recordValue = body.getValue();
+                return !(recordValue != null && !recordValue.isEmpty()
+                        && recordValue.equals(systemContext.getPublicIp()));
+            }
+            return false;
+        } catch (InterruptedException | ExecutionException e) {
+            error("出现了不应该出现的异常 => {}", e);
+            return false;
+        } catch (TimeoutException e) {
+            error("记录查询超时! 将跳过查询直接执行更新操作.");
+            return true;
+        }
+    }
+
+    private void handleThrowable(Throwable t){
+        error("出现异常 {}:", t.getCause(), t.getMessage());
     }
 
     @SuppressWarnings("all")
@@ -140,5 +178,10 @@ public class AliyunInstance extends DefaultInstance {
     @SuppressWarnings("all")
     private void debug(String msg, Object...params){
         log.debug("[实例活动][" + name + "]" + msg, params);
+    }
+
+    @SuppressWarnings("all")
+    private void error(String msg, Object...params){
+        log.error("[实例异常][" + name + "]" + msg, params);
     }
 }
