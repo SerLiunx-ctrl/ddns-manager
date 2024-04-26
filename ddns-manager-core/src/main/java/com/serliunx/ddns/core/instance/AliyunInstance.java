@@ -5,7 +5,6 @@ import com.aliyun.auth.credentials.provider.StaticCredentialProvider;
 import com.aliyun.sdk.service.alidns20150109.AsyncClient;
 import com.aliyun.sdk.service.alidns20150109.models.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import darabonba.core.client.ClientOverrideConfiguration;
 import lombok.Getter;

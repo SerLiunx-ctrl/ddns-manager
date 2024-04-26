@@ -1,7 +1,10 @@
 package com.serliunx.ddns.core.instance.factory;
 
 import com.serliunx.ddns.api.instance.Instance;
+import com.serliunx.ddns.core.instance.sql.entity.InstanceSqlEntity;
+import com.serliunx.ddns.core.instance.sql.service.InstanceService;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -10,12 +13,15 @@ import java.util.Set;
  */
 public class DatabaseInstanceFactory extends AbstractInstanceFactory{
 
-    public DatabaseInstanceFactory() {
+    private final InstanceService instanceService;
 
+    public DatabaseInstanceFactory(InstanceService instanceService) {
+        this.instanceService = instanceService;
     }
 
     @Override
     protected Set<Instance> load() {
+        List<InstanceSqlEntity> instancesInSql = instanceService.getAllInstances();
         return null;
     }
 }

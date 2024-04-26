@@ -109,7 +109,9 @@ public class DefaultInstanceContext implements MultipleSourceInstanceContext, In
             // 初次载入
             cacheInstanceMap = new HashMap<>(instances.stream().collect(Collectors.toMap(Instance::getName, i -> i)));
             // 不要直接赋值, 收集器的返回的是不可修改的Map
-            instanceMap = new HashMap<>(buildInstances(instances).stream().collect(Collectors.toMap(Instance::getName, i -> i)));
+            Set<Instance> builtInstances = buildInstances(instances);
+
+            instanceMap = new HashMap<>(builtInstances.stream().collect(Collectors.toMap(Instance::getName, i -> i)));
         }
     }
 

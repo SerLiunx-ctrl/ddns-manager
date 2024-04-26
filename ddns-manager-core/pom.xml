@@ -58,5 +58,14 @@
             <groupId>com.aliyun</groupId>
             <artifactId>alibabacloud-alidns20150109</artifactId>
         </dependency>
+        <!-- tencent sdk -->
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java-dnspod</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+        </dependency>
     </dependencies>
 </project>

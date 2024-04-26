@@ -2,10 +2,12 @@ package com.serliunx.ddns;
 
 import com.serliunx.ddns.api.constant.SystemConstants;
 import com.serliunx.ddns.api.instance.Instance;
-import com.serliunx.ddns.api.instance.MultipleSourceInstanceContext;
 import com.serliunx.ddns.config.SystemConfiguration;
+import com.serliunx.ddns.core.DefaultInstanceContext;
+import com.serliunx.ddns.core.instance.factory.DatabaseInstanceFactory;
 import com.serliunx.ddns.core.instance.factory.JsonFileInstanceFactory;
 import com.serliunx.ddns.core.instance.factory.XmlFileInstanceFactory;
+import com.serliunx.ddns.core.instance.sql.service.InstanceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
@@ -31,25 +33,29 @@ import static com.serliunx.ddns.api.constant.SystemConstants.USER_DIR;
  */
 @Slf4j
 @Component
-public final class SystemInitializer implements CommandLineRunner {
+public final class SystemInitializer implements CommandLineRunner{
 
     private final SystemConfiguration systemConfiguration;
     private final DynamicThreadFactory dynamicThreadFactory;
-    private final MultipleSourceInstanceContext instanceContext;
+    private final DefaultInstanceContext instanceContext;
+    private final InstanceService instanceService;
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
     private Set<Instance> instances;
 
     public SystemInitializer(SystemConfiguration systemConfiguration, DynamicThreadFactory dynamicThreadFactory,
-                             MultipleSourceInstanceContext instanceContext) {
+                             DefaultInstanceContext instanceContext, InstanceService instanceService) {
         this.systemConfiguration = systemConfiguration;
         this.dynamicThreadFactory = dynamicThreadFactory;
         this.instanceContext = instanceContext;
+        this.instanceService = instanceService;
     }
 
     @Override
     public void run(String... args) throws Exception {
         // 解压配置文件到主目录
-        releaseConfigFile("application.yml");
+        releaseFile("application.yml");
+        // 解压数据库文件到主目录
+        releaseFile("ddns_data.db");
         // 初始化实例信息
         init();
         // 初始化线程池
@@ -59,7 +65,7 @@ public final class SystemInitializer implements CommandLineRunner {
     }
 
     @SuppressWarnings("all")
-    private void releaseConfigFile(String resourceName) throws IOException {
+    private void releaseFile(String resourceName) throws IOException {
         // 从类路径下获取资源文件
         ClassPathResource resource = new ClassPathResource(resourceName);
 
@@ -104,6 +110,8 @@ public final class SystemInitializer implements CommandLineRunner {
         instanceContext.addInstanceFactory(new JsonFileInstanceFactory(SystemConstants.USER_INSTANCE_DIR));
         // 读取.xml文件
         instanceContext.addInstanceFactory(new XmlFileInstanceFactory(SystemConstants.USER_INSTANCE_DIR));
+        // 读取数据库中的文件
+        instanceContext.addInstanceFactory(new DatabaseInstanceFactory(instanceService));
         // 刷新容器
         instanceContext.refresh();
     }

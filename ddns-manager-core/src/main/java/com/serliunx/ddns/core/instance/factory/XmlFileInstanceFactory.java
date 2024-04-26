@@ -1,14 +1,9 @@
 package com.serliunx.ddns.core.instance.factory;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.serliunx.ddns.api.constant.SystemConstants;
 import com.serliunx.ddns.api.instance.Instance;
-import com.serliunx.ddns.api.instance.InstanceType;
 
 import java.io.File;
-
-import static com.serliunx.ddns.core.InstanceTypes.match;
 
 /**
  * Xml文件实例工厂

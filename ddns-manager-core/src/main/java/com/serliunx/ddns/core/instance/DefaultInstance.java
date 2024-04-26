@@ -54,6 +54,11 @@ public class DefaultInstance implements Instance {
     protected String fatherInstanceName;
 
     /**
+     * 域名
+     */
+    protected String domain;
+
+    /**
      * 实例上下文
      */
     @JsonIgnore

@@ -78,6 +78,24 @@
                 <artifactId>alibabacloud-alidns20150109</artifactId>
                 <version>3.0.14</version>
             </dependency>
+            <!-- tencent sdk -->
+            <dependency>
+                <groupId>com.tencentcloudapi</groupId>
+                <artifactId>tencentcloud-sdk-java-dnspod</artifactId>
+                <version>3.1.1002</version>
+            </dependency>
+            <!-- mybatis-plus -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>3.5.6</version>
+            </dependency>
+            <!-- sqlite-jdbc -->
+            <dependency>
+                <groupId>org.xerial</groupId>
+                <artifactId>sqlite-jdbc</artifactId>
+                <version>3.45.3.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
