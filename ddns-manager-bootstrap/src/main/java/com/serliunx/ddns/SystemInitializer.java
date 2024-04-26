@@ -5,6 +5,7 @@ import com.serliunx.ddns.api.instance.Instance;
 import com.serliunx.ddns.api.instance.MultipleSourceInstanceContext;
 import com.serliunx.ddns.config.SystemConfiguration;
 import com.serliunx.ddns.core.instance.factory.JsonFileInstanceFactory;
+import com.serliunx.ddns.core.instance.factory.XmlFileInstanceFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
@@ -101,6 +102,8 @@ public final class SystemInitializer implements CommandLineRunner {
     private void initFactories(){
         // 读取.json文件
         instanceContext.addInstanceFactory(new JsonFileInstanceFactory(SystemConstants.USER_INSTANCE_DIR));
+        // 读取.xml文件
+        instanceContext.addInstanceFactory(new XmlFileInstanceFactory(SystemConstants.USER_INSTANCE_DIR));
         // 刷新容器
         instanceContext.refresh();
     }

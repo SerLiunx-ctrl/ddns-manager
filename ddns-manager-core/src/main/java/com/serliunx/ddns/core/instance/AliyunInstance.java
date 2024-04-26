@@ -89,9 +89,6 @@ public class AliyunInstance extends DefaultInstance {
     private String value;
 
     @JsonIgnore
-    private JsonMapper jsonMapper;
-
-    @JsonIgnore
     private AsyncClient client;
 
     @Override

@@ -1,6 +1,7 @@
 package com.serliunx.ddns.core;
 
 import com.serliunx.ddns.api.instance.*;
+import com.serliunx.ddns.util.ReflectionUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -27,7 +28,17 @@ public class DefaultInstanceContext implements MultipleSourceInstanceContext, In
     private ApplicationContext applicationContext;
     private final List<InstanceFactory> instanceFactories;
 
+    /**
+     * 完整的实例信息
+     * <li> 作为主要操作对象
+     */
     private Map<String, Instance> instanceMap;
+
+    /**
+     * 实例信息缓存, 此时的实例继承关系并不完整
+     * <li> 不能作为主要的操作对象
+     */
+    private Map<String, Instance> cacheInstanceMap;
 
     public DefaultInstanceContext() {
         instanceFactories = new ArrayList<>(16);
@@ -95,8 +106,10 @@ public class DefaultInstanceContext implements MultipleSourceInstanceContext, In
             // 加载、过滤所有实例
             Set<Instance> instances = new HashSet<>();
             instanceFactories.forEach(f -> instances.addAll(f.getInstances()));
+            // 初次载入
+            cacheInstanceMap = new HashMap<>(instances.stream().collect(Collectors.toMap(Instance::getName, i -> i)));
             // 不要直接赋值, 收集器的返回的是不可修改的Map
-            instanceMap = new HashMap<>(instances.stream().collect(Collectors.toMap(Instance::getName, i -> i)));
+            instanceMap = new HashMap<>(buildInstances(instances).stream().collect(Collectors.toMap(Instance::getName, i -> i)));
         }
     }
 
@@ -104,5 +117,30 @@ public class DefaultInstanceContext implements MultipleSourceInstanceContext, In
     @SuppressWarnings("all")
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    /**
+     * 构建完整的实例信息
+     * @param instances 实例信息
+     * @return 属性设置完整的实例
+     */
+    private Set<Instance> buildInstances(Set<Instance> instances){
+        //设置实例信息, 如果需要从父类继承
+        return instances.stream()
+                .filter(i -> !InstanceType.INHERITED.equals(i.getInstanceType()))
+                .peek(i -> {
+                    String fatherInstanceName = i.getFatherInstanceName();
+                    if(fatherInstanceName != null && !fatherInstanceName.isEmpty()){
+                        Instance fatherInstance = cacheInstanceMap.get(fatherInstanceName);
+                        if(fatherInstance != null){
+                            try {
+                                ReflectionUtils.copyField(fatherInstance, i, true);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+                })
+                .collect(Collectors.toCollection(HashSet::new));
     }
 }

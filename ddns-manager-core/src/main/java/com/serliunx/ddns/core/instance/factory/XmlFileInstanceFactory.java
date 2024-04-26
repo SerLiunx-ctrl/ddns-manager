@@ -1,7 +1,7 @@
 package com.serliunx.ddns.core.instance.factory;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.serliunx.ddns.api.constant.SystemConstants;
 import com.serliunx.ddns.api.instance.Instance;
 import com.serliunx.ddns.api.instance.InstanceType;
@@ -11,30 +11,30 @@ import java.io.File;
 import static com.serliunx.ddns.core.InstanceTypes.match;
 
 /**
- * Json文件实例工厂
+ * Xml文件实例工厂
  * @author SerLiunx
  * @since 1.0
  */
-public class JsonFileInstanceFactory extends FileInstanceFactory{
+public class XmlFileInstanceFactory extends FileInstanceFactory{
 
-    private final JsonMapper jsonMapper;
+    private final XmlMapper xmlMapper;
 
-    public JsonFileInstanceFactory(String instanceDir, JsonMapper jsonMapper) {
+    public XmlFileInstanceFactory(String instanceDir, XmlMapper xmlMapper) {
         super(instanceDir);
-        this.jsonMapper = jsonMapper;
+        this.xmlMapper = xmlMapper;
     }
 
-    public JsonFileInstanceFactory(String instanceDir) {
-        this(instanceDir, new JsonMapper());
+    public XmlFileInstanceFactory(String instanceDir) {
+        this(instanceDir, new XmlMapper());
     }
 
     @Override
     protected Instance loadInstance(File file) {
-        return jacksonFileLoad(jsonMapper, file);
+        return jacksonFileLoad(xmlMapper, file);
     }
 
     @Override
     protected String[] fileSuffix() {
-        return new String[]{".json"};
+        return new String[]{".xml"};
     }
 }

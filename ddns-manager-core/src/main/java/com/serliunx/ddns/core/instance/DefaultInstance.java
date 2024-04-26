@@ -2,6 +2,7 @@ package com.serliunx.ddns.core.instance;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.serliunx.ddns.api.instance.Instance;
 import com.serliunx.ddns.api.instance.InstanceContext;
 import com.serliunx.ddns.api.instance.InstanceType;
@@ -9,9 +10,9 @@ import com.serliunx.ddns.context.SystemContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+
+import static com.serliunx.ddns.api.constant.SystemConstants.XML_ROOT_INSTANCE_NAME;
 
 /**
  * 实例的默认实现, 定义公共逻辑
@@ -22,9 +23,9 @@ import org.springframework.context.ApplicationContext;
 @Setter
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JacksonXmlRootElement(localName = XML_ROOT_INSTANCE_NAME)
 public class DefaultInstance implements Instance {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultInstance.class);
     /**
      * 实例类型
      */
