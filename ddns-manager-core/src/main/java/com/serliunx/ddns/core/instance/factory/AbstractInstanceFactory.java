@@ -3,13 +3,9 @@ package com.serliunx.ddns.core.instance.factory;
 import com.serliunx.ddns.api.instance.Instance;
 import com.serliunx.ddns.api.instance.InstanceFactory;
 import com.serliunx.ddns.api.instance.InstanceType;
-import com.serliunx.ddns.util.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.serliunx.ddns.util.InstanceUtils.validateInstance;
@@ -63,7 +59,7 @@ public abstract class AbstractInstanceFactory implements InstanceFactory{
 
     @Override
     public Set<Instance> getInstances() {
-        return new HashSet<>(instanceMap.values());
+        return instanceMap == null ? Collections.emptySet() : new HashSet<>(instanceMap.values());
     }
 
     public void init(){
