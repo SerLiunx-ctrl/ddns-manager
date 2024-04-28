@@ -12,6 +12,7 @@ import java.util.List;
  * @author SerLiunx
  * @since 1.0
  */
+@Deprecated
 @Service
 public class InstanceServiceImpl implements InstanceService{
 

@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 1.0
  */
 @Mapper
+@Deprecated
 public interface InstanceMapper extends BaseMapper<InstanceSqlEntity> {
 
 }

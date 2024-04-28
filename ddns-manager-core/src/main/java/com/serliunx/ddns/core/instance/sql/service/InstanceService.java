@@ -9,6 +9,7 @@ import java.util.List;
  * @author SerLiunx
  * @since 1.0
  */
+@Deprecated
 public interface InstanceService {
 
     /**
