@@ -11,6 +11,7 @@ import java.util.Set;
  * @author SerLiunx
  * @since 1.0
  */
+@Deprecated
 public class DatabaseInstanceFactory extends AbstractInstanceFactory{
 
     private final InstanceService instanceService;

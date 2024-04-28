@@ -4,10 +4,8 @@ import com.serliunx.ddns.api.constant.SystemConstants;
 import com.serliunx.ddns.api.instance.Instance;
 import com.serliunx.ddns.config.SystemConfiguration;
 import com.serliunx.ddns.core.DefaultInstanceContext;
-import com.serliunx.ddns.core.instance.factory.DatabaseInstanceFactory;
 import com.serliunx.ddns.core.instance.factory.JsonFileInstanceFactory;
 import com.serliunx.ddns.core.instance.factory.XmlFileInstanceFactory;
-import com.serliunx.ddns.core.instance.sql.service.InstanceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
@@ -38,16 +36,14 @@ public final class SystemInitializer implements CommandLineRunner{
     private final SystemConfiguration systemConfiguration;
     private final DynamicThreadFactory dynamicThreadFactory;
     private final DefaultInstanceContext instanceContext;
-    private final InstanceService instanceService;
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
     private Set<Instance> instances;
 
     public SystemInitializer(SystemConfiguration systemConfiguration, DynamicThreadFactory dynamicThreadFactory,
-                             DefaultInstanceContext instanceContext, InstanceService instanceService) {
+                             DefaultInstanceContext instanceContext) {
         this.systemConfiguration = systemConfiguration;
         this.dynamicThreadFactory = dynamicThreadFactory;
         this.instanceContext = instanceContext;
-        this.instanceService = instanceService;
     }
 
     @Override
@@ -110,8 +106,8 @@ public final class SystemInitializer implements CommandLineRunner{
         instanceContext.addInstanceFactory(new JsonFileInstanceFactory(SystemConstants.USER_INSTANCE_DIR));
         // 读取.xml文件
         instanceContext.addInstanceFactory(new XmlFileInstanceFactory(SystemConstants.USER_INSTANCE_DIR));
-        // 读取数据库中的文件
-        instanceContext.addInstanceFactory(new DatabaseInstanceFactory(instanceService));
+        // 读取数据库中的文件(暂时搁置相关功能开发)
+        // instanceContext.addInstanceFactory(new DatabaseInstanceFactory(instanceService));
         // 刷新容器
         instanceContext.refresh();
     }
