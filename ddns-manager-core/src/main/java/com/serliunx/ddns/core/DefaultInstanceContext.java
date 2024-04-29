@@ -1,6 +1,8 @@
 package com.serliunx.ddns.core;
 
 import com.serliunx.ddns.api.instance.*;
+import com.serliunx.ddns.api.instance.context.InstanceContext;
+import com.serliunx.ddns.api.instance.context.MultipleSourceInstanceContext;
 import com.serliunx.ddns.util.ReflectionUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

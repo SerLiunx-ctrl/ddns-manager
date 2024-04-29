@@ -1,5 +1,7 @@
 package com.serliunx.ddns.api.instance;
 
+import com.serliunx.ddns.api.instance.context.InstanceContext;
+
 /**
  * 实例对象
  * @author SerLiunx
@@ -40,6 +42,13 @@ public interface Instance extends Runnable {
      * @return 执行周期
      */
     Long getInterval();
+
+    /**
+     * 实例参数校验
+     * <li> 实例名称和类型已由实例工厂校验、子类无需重复校验
+     * @return 校验通过返回真, 否则返回假. 默认返回真, 代表无需校验参数
+     */
+    boolean validate();
 
     /**
      * 设置实例上下文

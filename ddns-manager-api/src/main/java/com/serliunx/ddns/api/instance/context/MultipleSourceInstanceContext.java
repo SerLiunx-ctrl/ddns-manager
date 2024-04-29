@@ -1,4 +1,6 @@
-package com.serliunx.ddns.api.instance;
+package com.serliunx.ddns.api.instance.context;
+
+import com.serliunx.ddns.api.instance.InstanceFactory;
 
 import java.util.List;
 

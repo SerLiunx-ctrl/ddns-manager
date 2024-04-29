@@ -5,6 +5,8 @@ import com.aliyun.auth.credentials.provider.StaticCredentialProvider;
 import com.aliyun.sdk.service.alidns20150109.AsyncClient;
 import com.aliyun.sdk.service.alidns20150109.models.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import darabonba.core.client.ClientOverrideConfiguration;
 import lombok.Getter;
@@ -79,19 +81,16 @@ public class AliyunInstance extends DefaultInstance {
      */
     private String type;
 
-    /**
-     * 记录值。
-     * 示例值:
-     * 192.0.2.254
-     * <li> 无需手动指定IP，系统会自动获取。
-     */
-    private String value;
-
     @JsonIgnore
     private AsyncClient client;
 
+    @JsonIgnore
+    private JsonMapper jsonMapper;
+
     @Override
     protected void init0() {
+        jsonMapper = new JsonMapper();
+
         StaticCredentialProvider provider = StaticCredentialProvider.create(Credential.builder()
                 .accessKeyId(accessKeyId)
                 .accessKeySecret(accessKeySecret)
@@ -129,7 +128,12 @@ public class AliyunInstance extends DefaultInstance {
                 if(t != null){ //出现异常
                     handleThrowable(t);
                 }else{
-                    debug("操作结束, 结果: {}", v);
+                    String result = null;
+                    try {
+                        result = jsonMapper.writeValueAsString(v);
+                    } catch (JsonProcessingException ignored) {} finally {
+                        debug("操作结束, 结果: {}", result == null ? v : result);
+                    }
                 }
             });
         } catch (Exception e) {
@@ -160,6 +164,13 @@ public class AliyunInstance extends DefaultInstance {
             error("记录查询超时! 将跳过查询直接执行更新操作.");
             return true;
         }
+    }
+
+    @Override
+    public boolean validate() {
+        //简单的必填参数校验
+        return accessKeyId != null && !accessKeyId.isEmpty() && accessKeySecret != null && !accessKeySecret.isEmpty()
+                && recordId != null && !recordId.isEmpty() && rr != null && !rr.isEmpty() && type != null && !type.isEmpty();
     }
 
     private void handleThrowable(Throwable t){

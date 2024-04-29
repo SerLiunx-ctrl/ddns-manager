@@ -6,6 +6,7 @@ import com.serliunx.ddns.config.SystemConfiguration;
 import com.serliunx.ddns.core.DefaultInstanceContext;
 import com.serliunx.ddns.core.instance.factory.JsonFileInstanceFactory;
 import com.serliunx.ddns.core.instance.factory.XmlFileInstanceFactory;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
@@ -18,7 +19,10 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +40,13 @@ public final class SystemInitializer implements CommandLineRunner{
     private final SystemConfiguration systemConfiguration;
     private final DynamicThreadFactory dynamicThreadFactory;
     private final DefaultInstanceContext instanceContext;
+
+    /**
+     * 正在运行的实例信息
+     */
+    @Getter
+    private final Map<String, ScheduledFuture<?>> runningInstance = new ConcurrentHashMap<>();
+
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
     private Set<Instance> instances;
 
@@ -94,9 +105,13 @@ public final class SystemInitializer implements CommandLineRunner{
         instances = instanceContext.getInstances();
         // 设置实例上下文信息、初始化
         instances.forEach(i -> {
-            log.debug("实例信息 => {}", i);
             i.setInstanceContext(instanceContext);
-            i.init();
+            try {
+                i.init();
+            }catch (Exception e){
+                log.error("实例 {} 加载出现异常, 已撤回加载. 原因 => {}", i.getName(), e.getMessage());
+                instances.remove(i);
+            }
         });
         log.info("成功载入 {} 个实例", instances.size());
     }
@@ -124,16 +139,28 @@ public final class SystemInitializer implements CommandLineRunner{
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("服务正在关闭, 可能需要一定时间.");
             //执行实例的关闭钩子函数
-            instances.forEach(Instance::onClose);
-            scheduledThreadPoolExecutor.shutdown();
-            log.info("服务已关闭...");
+            try{
+                instances.forEach(Instance::onClose);
+            }catch (Exception e){
+                log.error("实例钩子函数执行出现异常 => {}", e.getMessage());
+            }finally {
+                scheduledThreadPoolExecutor.shutdown();
+                log.info("服务已关闭...");
+            }
         }, "ShutDownHook"));
     }
 
     private void runInstances() {
         instances.forEach(i -> {
-            log.debug("实例{}({})启动!", i.getName(), i.getInstanceType());
-            scheduledThreadPoolExecutor.scheduleWithFixedDelay(i, i.getInterval(), i.getInterval(), TimeUnit.SECONDS);
+            if(i.validate()){
+                log.debug("实例{}({})启动!", i.getName(), i.getInstanceType());
+                ScheduledFuture<?> scheduledFuture = scheduledThreadPoolExecutor
+                        .scheduleWithFixedDelay(i, i.getInterval(), i.getInterval(), TimeUnit.SECONDS);
+                // 成功启动的放入正在运行的实例信息中
+                runningInstance.put(i.getName(), scheduledFuture);
+            }else{
+                log.error("实例{}({})启动失败, 缺少必要参数!", i.getName(), i.getInstanceType());
+            }
         });
     }
 }

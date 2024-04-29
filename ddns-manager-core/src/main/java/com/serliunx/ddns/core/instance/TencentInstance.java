@@ -43,6 +43,16 @@ public class TencentInstance extends DefaultInstance {
      */
     private Long recordId;
 
+    /**
+     * 记录类型，通过 API 记录类型获得，大写英文，比如：A
+     */
+    private String recordType;
+
+    /**
+     * 记录线路，通过 API 记录线路获得，中文，比如：默认
+     */
+    private String recordLine = "默认";
+
     @JsonIgnore
     private DnspodClient client;
 
@@ -73,6 +83,11 @@ public class TencentInstance extends DefaultInstance {
         } catch (TencentCloudSDKException e) {
             error("出现了不应该出现的异常 => {}", e);
         }
+        return false;
+    }
+
+    @Override
+    public boolean validate() {
         return false;
     }
 

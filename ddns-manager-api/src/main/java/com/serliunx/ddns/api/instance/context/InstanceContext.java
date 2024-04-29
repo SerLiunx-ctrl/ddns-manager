@@ -1,5 +1,6 @@
-package com.serliunx.ddns.api.instance;
+package com.serliunx.ddns.api.instance.context;
 
+import com.serliunx.ddns.api.instance.InstanceFactory;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -7,7 +8,7 @@ import org.springframework.context.ApplicationContext;
  * @author SerLiunx
  * @since 1.0
  */
-public interface InstanceContext extends InstanceFactory{
+public interface InstanceContext extends InstanceFactory {
 
     /**
      * 获取Spring容器
