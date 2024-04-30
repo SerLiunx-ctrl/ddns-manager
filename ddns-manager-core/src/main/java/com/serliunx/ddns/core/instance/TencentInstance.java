@@ -81,7 +81,7 @@ public class TencentInstance extends DefaultInstance {
             DescribeRecordResponse response = client.DescribeRecord(describeRecordRequest);
 
         } catch (TencentCloudSDKException e) {
-            error("出现了不应该出现的异常 => {}", e);
+            error("出现异常 => {}", e.getMessage());
         }
         return false;
     }

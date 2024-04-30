@@ -4,6 +4,7 @@ import com.serliunx.ddns.api.constant.SystemConstants;
 import com.serliunx.ddns.api.instance.Instance;
 import com.serliunx.ddns.config.SystemConfiguration;
 import com.serliunx.ddns.core.DefaultInstanceContext;
+import com.serliunx.ddns.core.StatefulInstance;
 import com.serliunx.ddns.core.instance.factory.JsonFileInstanceFactory;
 import com.serliunx.ddns.core.instance.factory.XmlFileInstanceFactory;
 import lombok.Getter;
@@ -45,7 +46,13 @@ public final class SystemInitializer implements CommandLineRunner{
      * 正在运行的实例信息
      */
     @Getter
-    private final Map<String, ScheduledFuture<?>> runningInstance = new ConcurrentHashMap<>();
+    private final Map<String, StatefulInstance> runningInstance = new ConcurrentHashMap<>();
+
+    /**
+     * 运行失败/已停止的实例
+     */
+    @Getter
+    private final Map<String, StatefulInstance> stoppedInstance = new ConcurrentHashMap<>();
 
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
     private Set<Instance> instances;
@@ -156,8 +163,10 @@ public final class SystemInitializer implements CommandLineRunner{
                 log.debug("实例{}({})启动!", i.getName(), i.getInstanceType());
                 ScheduledFuture<?> scheduledFuture = scheduledThreadPoolExecutor
                         .scheduleWithFixedDelay(i, i.getInterval(), i.getInterval(), TimeUnit.SECONDS);
+                StatefulInstance statefulInstance = new StatefulInstance(i)
+                        .setTaskFuture(scheduledFuture);
                 // 成功启动的放入正在运行的实例信息中
-                runningInstance.put(i.getName(), scheduledFuture);
+                runningInstance.put(i.getName(), statefulInstance);
             }else{
                 log.error("实例{}({})启动失败, 缺少必要参数!", i.getName(), i.getInstanceType());
             }
