@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.serliunx.ddns.api.instance.Instance;
+import com.serliunx.ddns.api.instance.InstanceSource;
 import com.serliunx.ddns.api.instance.context.InstanceContext;
 import com.serliunx.ddns.api.instance.InstanceType;
 import com.serliunx.ddns.context.SystemContext;
@@ -67,6 +68,11 @@ public class DefaultInstance implements Instance {
     protected String value;
 
     /**
+     * 实例来源
+     */
+    protected InstanceSource instanceSource;
+
+    /**
      * 实例上下文
      */
     @JsonIgnore
@@ -111,6 +117,23 @@ public class DefaultInstance implements Instance {
     @Override
     public void onClose() {}
 
+    /**
+     * 实例参数校验, 每种实例类型参数要求不同. 交由子类实现
+     * <li> 实例名称和类型已由实例工厂校验、子类无需重复校验
+     * @return 校验通过返回真, 否则返回假. 默认返回真, 代表无需校验参数
+     */
+    public boolean validate(){return true;}
+
+    @Override
+    public InstanceSource getInstanceSource() {
+        return instanceSource;
+    }
+
+    @Override
+    public void setInstanceSource(InstanceSource instanceSource) {
+        this.instanceSource = instanceSource;
+    }
+
     protected boolean needToUpdate(String publicIp){
         if(publicIp == null || publicIp.isEmpty()){
             return true;
@@ -118,13 +141,6 @@ public class DefaultInstance implements Instance {
         // 公网IP有变动是才进行更新操作
         return prevPublicIp == null || !prevPublicIp.equals(publicIp);
     }
-
-    /**
-     * 实例参数校验, 每种实例类型参数要求不同. 交由子类实现
-     * <li> 实例名称和类型已由实例工厂校验、子类无需重复校验
-     * @return 校验通过返回真, 否则返回假. 默认返回真, 代表无需校验参数
-     */
-    public boolean validate(){return true;}
 
     /**
      * 实例运行逻辑, 具体实例类型逻辑需要子类实现

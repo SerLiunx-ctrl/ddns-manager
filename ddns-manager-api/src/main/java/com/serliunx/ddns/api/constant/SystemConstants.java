@@ -19,32 +19,37 @@ public final class SystemConstants {
     /**
      * 运行目录
      */
-    public final static String USER_DIR = System.getProperty("user.dir");
+    public static final String USER_DIR = System.getProperty("user.dir");
 
     /**
      * JSON文件后缀
      */
-    public final static String JSON_FILE = ".json";
+    public static final String JSON_FILE = ".json";
 
     /**
      * XML文件后缀
      */
-    public final static String XML_FILE = ".xml";
+    public static final String XML_FILE = ".xml";
 
     /**
      * YML文件后缀
      */
-    public final static String YML = ".yml";
+    public static final String YML = ".yml";
 
     /**
      * YAML文件后缀
      */
-    public final static String YAML = ".yaml";
+    public static final String YAML = ".yaml";
+
+    /**
+     * sqlite
+     */
+    public static final String DATABASE_SQLITE = "sqlite";
 
     /**
      * XML格式的实例文件根元素名称
      */
-    public final static String XML_ROOT_INSTANCE_NAME = "instance";
+    public static final String XML_ROOT_INSTANCE_NAME = "instance";
 
     /**
      * 实例类型字段名

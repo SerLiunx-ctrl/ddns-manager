@@ -1,17 +1,11 @@
 package com.serliunx.ddns.core.instance.factory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.serliunx.ddns.api.constant.SystemConstants;
 import com.serliunx.ddns.api.instance.Instance;
-import com.serliunx.ddns.api.instance.InstanceType;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.serliunx.ddns.core.InstanceTypes.match;
 
 /**
  * 加载已文件形式存储的实例信息
@@ -70,20 +64,6 @@ public abstract class FileInstanceFactory extends AbstractInstanceFactory{
             return Collections.emptySet();
         }
         return Arrays.stream(files).collect(Collectors.toCollection(HashSet::new));
-    }
-
-    /**
-     * 仅Jackson适用
-     */
-    protected Instance jacksonFileLoad(ObjectMapper objectMapper, File file){
-        try {
-            JsonNode root = objectMapper.readTree(file);
-            String rootName = root.get(SystemConstants.TYPE_FIELD).asText(); //根据类型去装配实例信息
-            InstanceType instanceType = InstanceType.valueOf(rootName);
-            return objectMapper.treeToValue(root, match(instanceType));
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
     }
 
     private static class InnerFileFilter implements FileFilter {

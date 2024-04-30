@@ -38,6 +38,18 @@ public interface Instance extends Runnable {
     InstanceType getInstanceType();
 
     /**
+     * 获取实例来源
+     * @return 实例来源
+     */
+    InstanceSource getInstanceSource();
+
+    /**
+     * 设置实例来源
+     * @param instanceSource 实例来源
+     */
+    void setInstanceSource(InstanceSource instanceSource);
+
+    /**
      * 获取实例的执行周期
      * @return 执行周期
      */

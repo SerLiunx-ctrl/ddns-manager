@@ -1,9 +1,15 @@
 package com.serliunx.ddns.core.instance.factory;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.serliunx.ddns.api.constant.SystemConstants;
 import com.serliunx.ddns.api.instance.Instance;
+import com.serliunx.ddns.api.instance.InstanceSource;
+import com.serliunx.ddns.api.instance.InstanceType;
 
 import java.io.File;
+
+import static com.serliunx.ddns.core.InstanceTypes.match;
 
 /**
  * Xml文件实例工厂
@@ -25,7 +31,16 @@ public class XmlFileInstanceFactory extends FileInstanceFactory{
 
     @Override
     protected Instance loadInstance(File file) {
-        return jacksonFileLoad(xmlMapper, file);
+        try {
+            JsonNode root = xmlMapper.readTree(file);
+            String rootName = root.get(SystemConstants.TYPE_FIELD).asText(); //根据类型去装配实例信息
+            InstanceType instanceType = InstanceType.valueOf(rootName);
+            Instance instance = xmlMapper.treeToValue(root, match(instanceType));
+            instance.setInstanceSource(InstanceSource.FILE_XML);
+            return instance;
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

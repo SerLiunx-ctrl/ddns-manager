@@ -7,6 +7,7 @@ import com.serliunx.ddns.core.DefaultInstanceContext;
 import com.serliunx.ddns.core.StatefulInstance;
 import com.serliunx.ddns.core.instance.factory.JsonFileInstanceFactory;
 import com.serliunx.ddns.core.instance.factory.XmlFileInstanceFactory;
+import com.serliunx.ddns.core.instance.factory.YamlFileInstanceFactory;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -114,6 +115,7 @@ public final class SystemInitializer implements CommandLineRunner{
         instances.forEach(i -> {
             i.setInstanceContext(instanceContext);
             try {
+                log.debug("{}", i);
                 i.init();
             }catch (Exception e){
                 log.error("实例 {} 加载出现异常, 已撤回加载. 原因 => {}", i.getName(), e.getMessage());
@@ -128,6 +130,8 @@ public final class SystemInitializer implements CommandLineRunner{
         instanceContext.addInstanceFactory(new JsonFileInstanceFactory(SystemConstants.USER_INSTANCE_DIR));
         // 读取.xml文件
         instanceContext.addInstanceFactory(new XmlFileInstanceFactory(SystemConstants.USER_INSTANCE_DIR));
+        // 读取.yml/.yaml文件
+        instanceContext.addInstanceFactory(new YamlFileInstanceFactory(SystemConstants.USER_INSTANCE_DIR));
         // 读取数据库中的文件(暂时搁置相关功能开发)
         // instanceContext.addInstanceFactory(new DatabaseInstanceFactory(instanceService));
         // 刷新容器
