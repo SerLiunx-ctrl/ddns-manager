@@ -1,6 +1,8 @@
 package com.serliunx.ddns.core;
 
-import com.serliunx.ddns.api.instance.*;
+import com.serliunx.ddns.api.instance.Instance;
+import com.serliunx.ddns.api.instance.InstanceFactory;
+import com.serliunx.ddns.api.instance.InstanceType;
 import com.serliunx.ddns.api.instance.context.InstanceContext;
 import com.serliunx.ddns.api.instance.context.MultipleSourceInstanceContext;
 import com.serliunx.ddns.util.ReflectionUtils;
