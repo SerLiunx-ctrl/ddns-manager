@@ -1,4 +1,4 @@
-# DDNS-Manger
+# DDNS-Manager
 
 ## 简介
 这是一个动态域名解析（Dynamic DNS，简称 DDNS）工具，用于自动更新域名解析记录，以适应动态 IP 地址变化的情况。
