@@ -162,18 +162,25 @@ public final class SystemInitializer implements CommandLineRunner{
     }
 
     private void runInstances() {
-        instances.forEach(i -> {
-            if(i.validate()){
-                log.debug("实例{}({})启动!", i.getName(), i.getInstanceType());
-                ScheduledFuture<?> scheduledFuture = scheduledThreadPoolExecutor
-                        .scheduleWithFixedDelay(i, i.getInterval(), i.getInterval(), TimeUnit.SECONDS);
-                StatefulInstance statefulInstance = new StatefulInstance(i)
-                        .setTaskFuture(scheduledFuture);
-                // 成功启动的放入正在运行的实例信息中
-                runningInstance.put(i.getName(), statefulInstance);
-            }else{
-                log.error("实例{}({})启动失败, 缺少必要参数!", i.getName(), i.getInstanceType());
+        int started = 0;
+        for (Instance i : instances) {
+            try{
+                if(i.validate()){
+                    log.debug("实例{}({})启动!", i.getName(), i.getInstanceType());
+                    ScheduledFuture<?> scheduledFuture = scheduledThreadPoolExecutor
+                            .scheduleWithFixedDelay(i, i.getInterval(), i.getInterval(), TimeUnit.SECONDS);
+                    StatefulInstance statefulInstance = new StatefulInstance(i)
+                            .setTaskFuture(scheduledFuture);
+                    // 成功启动的放入正在运行的实例信息中
+                    runningInstance.put(i.getName(), statefulInstance);
+                    started++;
+                }else{
+                    log.error("实例{}({})启动失败, 缺少必要参数!", i.getName(), i.getInstanceType());
+                }
+            }catch (Exception e){
+                log.error("实例{}({})启动失败, 出现异常 => {}", i.getName(), i.getInstanceType(), e.getMessage());
             }
-        });
+        }
+        log.debug("成功启动 {} 个实例", started);
     }
 }

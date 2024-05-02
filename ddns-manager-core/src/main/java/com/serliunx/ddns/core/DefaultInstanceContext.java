@@ -94,6 +94,9 @@ public class DefaultInstanceContext implements MultipleSourceInstanceContext, In
 
     @Override
     public void addInstanceFactory(InstanceFactory instanceFactory) {
+        if(instanceFactory == null){
+            throw new NullPointerException();
+        }
         this.instanceFactories.add(instanceFactory);
     }
 

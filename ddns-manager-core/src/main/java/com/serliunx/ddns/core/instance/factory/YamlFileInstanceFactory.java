@@ -38,7 +38,6 @@ public class YamlFileInstanceFactory extends FileInstanceFactory{
             Yaml yaml = new Yaml();
             Map<String, Object> valueMap = yaml.load(instanceInputStream);
             InstanceType type = null;
-            System.out.println(valueMap);
             if(valueMap.get(TYPE_FIELD) != null){
                 type = InstanceType.valueOf((String) valueMap.get(TYPE_FIELD));
             }
